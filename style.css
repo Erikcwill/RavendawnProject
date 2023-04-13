@@ -22,4 +22,8 @@
   .card p {
     margin: 8px 0;
   }
-  
+ 
+
+  .hidden {
+    display: none;
+  }

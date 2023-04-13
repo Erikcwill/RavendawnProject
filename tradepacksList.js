@@ -138,8 +138,8 @@ export const tradepacksList = [
     name: "Strawberry Cakes",
     ingredients: [
       { name: "Ground flour", quantity: "50" },
-      { name: "Milk", quantity: "10" },
-      { name: "Strawberry", quantity: "30" },
+      { name: "Milk", quantity: "18" },
+      { name: "Strawberry", quantity: "40" },
     ],
   },
   {
