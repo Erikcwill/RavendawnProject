@@ -1,105 +1,110 @@
-// script.js
-import { tradepacksList } from "./tradepacksList.js";
+import { tradepackList } from "./tradepacksList.js";
 import { ingredientList } from "./ingredientList.js";
 
-const tradePacksContainer = document.getElementById("tradePacksContainer");
+const tradepackCardsContainer = document.getElementById(
+  "tradepack-cards-container"
+);
 
-for (const tradepack of tradepacksList) {
+for (const tradepack of tradepackList) {
   const card = document.createElement("div");
-  card.className = "card_packs";
-  
-  const containerTitleCard = document.createElement("div");
-  containerTitleCard.className = "container_title_card";
-  
-  const titleCard = document.createElement("h3");
-  titleCard.className = "title_card";
-  titleCard.textContent = tradepack.name;
-  
-  containerTitleCard.appendChild(titleCard);
-  card.appendChild(containerTitleCard);
-  
-  const ingredients = document.createElement("div");
-  ingredients.className = "card_ingredients";
-  
-  const secondaryNamesDiv = document.createElement("div");
-  secondaryNamesDiv.className = "secondary_names_div hidden";
-  
-  card.appendChild(secondaryNamesDiv);
-  
-  card.addEventListener("click", () => {
-    secondaryNamesDiv.classList.toggle("hidden");
-  });
-  
+  card.classList.add("card");
+
+  const title = document.createElement("h2");
+  title.textContent = tradepack.name;
+  card.appendChild(title);
+
+  const ingredientsList = document.createElement("ul");
+
   for (const ingredient of tradepack.ingredients) {
-    const ingredientItem = document.createElement("p");
-    ingredientItem.className = "ingredient_item";
-    const ingredientInfo = ingredientList.find(
-      (info) => info.name === ingredient.name
+    const listItem = document.createElement("li");
+    const ingredientData = ingredientList.find(
+      (data) => data.name === ingredient.name
     );
-    ingredientItem.textContent = `${ingredient.name} - ${ingredient.quantity}`;
-    if (ingredientInfo) {
-      const price = Array.isArray(ingredientInfo.price) ?
-        ingredientInfo.price[0] :
-        ingredientInfo.price;
-      const minQuantity = Array.isArray(ingredientInfo.minQuantity) ?
-        ingredientInfo.minQuantity[0] :
-        ingredientInfo.minQuantity;
-      const maxQuantity = Array.isArray(ingredientInfo.maxQuantity) ?
-        ingredientInfo.maxQuantity[0] :
-        ingredientInfo.maxQuantity;
-      const unitsPerPack = ingredient.quantity;
-      const averageQuantity = (minQuantity + maxQuantity) / 2;
-      const costPerPack = Math.round((price / averageQuantity) * unitsPerPack);
-      const cost = costPerPack;
-      
-      const necessaryLevel =
-        ingredientInfo.necessaryLevel.length > 1 ?
-        ingredientInfo.necessaryLevel[0] :
-        ingredientInfo.necessaryLevel;
-      ingredientItem.innerHTML += ` Cost: ${cost} - ${ingredientInfo.category}: ${necessaryLevel}`;
-  
-      if (ingredientInfo.necessaryLevel.length > 1) {
-        const additionalLevels = ingredientInfo.necessaryLevel.slice(1);
-        if (additionalLevels.length > 0) {
-          const additionalInfo = document.createElement("p");
-          additionalInfo.className = "additional_info";
-          additionalInfo.textContent = `Os itens adicionais para ${ingredient.name} são:`;
-  
-          if (card.querySelector(".secondary_names_div").childElementCount === 0) {
-            card.querySelector(".secondary_names_div").appendChild(additionalInfo);
-          } else {
-            card.querySelector(".secondary_names_div").firstChild.textContent = additionalInfo.textContent;
+    if (ingredientData) {
+      const ingredientCategory = ingredientData.category;
+      const ingredientName = ingredientData.name;
+      const ingredientQuantity = ingredient.quantity;
+      const ingredientLevel = ingredientData.necessaryLevel[0];
+      let ingredientPrice = ingredientData.price[0];
+
+      const ingredientInfo = `${ingredientName} (${ingredientQuantity}), ${ingredientCategory}: ${ingredientLevel}, Preço: ${ingredientPrice} `;
+      listItem.textContent = `${ingredientInfo}`;
+    } else {
+      listItem.textContent = "N/A";
+    }
+
+    ingredientsList.appendChild(listItem);
+  }
+  card.appendChild(ingredientsList);
+
+  card.addEventListener("click", () => {
+    const popup = document.createElement("div");
+    popup.classList.add("popup");
+
+    for (const ingredient of tradepack.ingredients) {
+      const ingredientData = ingredientList.find(
+        (data) => data.name === ingredient.name
+      );
+      if (ingredientData) {
+        for (let i = 0; i < ingredientData.anotherSource.length; i++) {
+          const name = ingredientData.anotherSource[i];
+
+          const div = document.createElement("div");
+          div.classList.add("card");
+
+          const title = document.createElement("h2");
+          title.textContent = name;
+          div.appendChild(title);
+
+          const ingredientInfo = document.createElement("ul");
+
+          let ingredientesInfo = "";
+
+          for (const ingredientPack of tradepack.ingredients) {
+            const ingredientPackData = ingredientList.find(
+              (data) => data.name === ingredientPack.name
+            );
+            if (ingredientPackData) {
+              const ingredientPackCategory = ingredientPackData.category;
+              const ingredientPackName = ingredientPackData.name;
+              const ingredientPackQuantity = ingredientPack.quantity;
+              let ingredientPackLevel = ingredientPackData.necessaryLevel[0];
+              let ingredientPackPrice = ingredientPackData.price[0];
+
+              if (ingredientPackData.anotherSource.includes(name)) {
+                // Verifica se o name atual é encontrado em anotherSource
+                const index = ingredientPackData.anotherSource.indexOf(name);
+                ingredientPackPrice = ingredientPackData.anotherPrice[index];
+                ingredientPackLevel = ingredientPackData.necessaryLevel[index];
+              }
+
+              const ingredientPackInfo = `${ingredientPackName} (${ingredientPackQuantity}), ${ingredientPackCategory}: ${ingredientPackLevel}, Preço: ${ingredientPackPrice} `;
+              ingredientesInfo += `${ingredientPackInfo} \n`;
+            }
           }
-          for (const level of additionalLevels) {
-            const newPrice = (ingredientInfo.price[1])
-            const newMinQuantity = (ingredientInfo.minQuantity[1])
-            const newMaxQuantity = (ingredientInfo.maxQuantity[1])
-            const newAverageQuantity = (newMinQuantity + newMaxQuantity) / 2;
-            const newCostPerPack = Math.round((newPrice / newAverageQuantity) * unitsPerPack);
-            const newCost = newCostPerPack;
-            const levelInfo1 = document.createElement("span");
-            levelInfo1.textContent = ` ${ingredient.name} - ${ingredient.quantity} ${ingredientInfo.category}: ${level} ${newCost}`;
-            additionalInfo.appendChild(levelInfo1);
-          }
-        }
-      } else {
-        const noAdditionalInfo = document.createElement("p");
-        noAdditionalInfo.className = "no_additional_info";
-        noAdditionalInfo.textContent = "Esse item não possui níveis adicionais";
-  
-        if (card.querySelector(".secondary_names_div").childElementCount === 0) {
-          card.querySelector(".secondary_names_div").appendChild(noAdditionalInfo);
-        } else {
-          card.querySelector(".secondary_names_div").firstChild.textContent = noAdditionalInfo.textContent;
+
+          const listItem = document.createElement("li");
+          listItem.textContent = ingredientesInfo;
+          ingredientInfo.appendChild(listItem);
+
+          div.appendChild(ingredientInfo);
+
+          popup.appendChild(div);
         }
       }
-    } else {
-      ingredientItem.innerHTML += ` Cost: N/A - N/A`;
     }
-    ingredients.appendChild(ingredientItem);
-  }
-  card.appendChild(ingredients);
-  tradePacksContainer.appendChild(card);
-}
 
-  
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "X";
+    closeButton.classList.add("close-button");
+    closeButton.addEventListener("click", () => {
+      popup.remove();
+    });
+
+    popup.appendChild(closeButton);
+
+    document.body.appendChild(popup);
+  });
+
+  tradepackCardsContainer.appendChild(card);
+}
