@@ -27,9 +27,9 @@ export const tradepacksList = [
   {
     name: "Basic Rations",
     ingredients: [
-      { name: "Wheat", quantity: "40" },
-      { name: "Corn", quantity: "25" },
-      { name: "Apple", quantity: "15" },
+      { name: "Wheat", quantity: "15" },
+      { name: "Corn", quantity: "10" },
+      { name: "Apple", quantity: "10" },
     ],
   },
   {
